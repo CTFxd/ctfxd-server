@@ -7,6 +7,7 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -34,6 +35,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		claims, err := ParseJWT(headerParts[1])
 		if err != nil {
+			log.Printf("JWT validation failed: %v\n", err)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			return
 		}

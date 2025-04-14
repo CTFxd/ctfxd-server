@@ -85,9 +85,13 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	// TODO: c.SetCookie("token", token, 24*60*60, "/", "", true, true)
-	c.SetCookie("token", token, 24*60*60, "/", "", false, true)
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user": gin.H{
+			"id":    user.ID.Hex(),
+			"email": user.Email,
+		},
+	})
 }
 
 func (h *Handler) GetMe(c *gin.Context) {

@@ -8,6 +8,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -38,12 +39,21 @@ func GenerateJWT(userID, email string) (string, error) {
 
 func ParseJWT(tokenStr string) (*Claims, error) {
 	claims := new(Claims)
-	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
+
+	parser := jwt.NewParser(jwt.WithLeeway(10 * time.Second))
+	token, err := parser.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
 		return jwtKey, nil
 	})
 
 	if err != nil || !token.Valid {
 		return nil, errors.New("invalid JWT")
+	}
+
+	if claims.ExpiresAt == nil {
+		return nil, errors.New("token must have expiration time")
 	}
 
 	return claims, nil
