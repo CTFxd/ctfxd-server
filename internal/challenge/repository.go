@@ -54,3 +54,29 @@ func (r *Repository) GetByID(ctx context.Context, id string) (*Challenge, error)
 
 	return challenge, nil
 }
+
+func (r *Repository) Create(ctx context.Context, c *Challenge) error {
+	_, err := r.collection.InsertOne(ctx, c)
+
+	return err
+}
+
+func (r *Repository) Update(ctx context.Context, id string, update bson.M) error {
+	objId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.collection.UpdateOne(ctx, bson.M{"_id": objId}, bson.M{"$set": update})
+	return err
+}
+
+func (r *Repository) Delete(ctx context.Context, id string) error {
+	objId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.collection.DeleteOne(ctx, bson.M{"_id": objId})
+	return err
+}

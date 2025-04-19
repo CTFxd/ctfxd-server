@@ -18,7 +18,7 @@ func SetupUserRoutes(router *gin.Engine, userHandler *user.Handler) {
 	// public routes (no auth) Probably ???
 	public := apiV1.Group("")
 	{
-		public.POST("/register", userHandler.Register)
+		public.POST("/register", userHandler.RegisterUser)
 		public.POST("/login", userHandler.Login)
 	}
 
@@ -27,5 +27,11 @@ func SetupUserRoutes(router *gin.Engine, userHandler *user.Handler) {
 	protected.Use(auth.AuthMiddleware())
 	{
 		protected.GET("/me", userHandler.GetMe)
+	}
+
+	admin := protected.Group("")
+	admin.Use(auth.AdminMiddleware())
+	{
+		admin.POST("/admin/register", userHandler.RegisterAdmin)
 	}
 }

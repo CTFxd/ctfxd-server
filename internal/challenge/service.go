@@ -6,7 +6,11 @@
 
 package challenge
 
-import "context"
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
 
 type Service struct {
 	repo *Repository
@@ -25,4 +29,16 @@ func (s *Service) ListChallenges(ctx context.Context) ([]Challenge, error) {
 
 func (s *Service) GetChallenge(ctx context.Context, id string) (*Challenge, error) {
 	return s.repo.GetByID(ctx, id)
+}
+
+func (s *Service) CreateChallenge(ctx context.Context, c *Challenge) error {
+	return s.repo.Create(ctx, c)
+}
+
+func (s *Service) UpdateChallenge(ctx context.Context, id string, update bson.M) error {
+	return s.repo.Update(ctx, id, update)
+}
+
+func (s *Service) DeleteChallenge(ctx context.Context, id string) error {
+	return s.repo.Delete(ctx, id)
 }

@@ -16,5 +16,9 @@ type Challenge struct {
 	Category    string        `bson:"category" json:"category"`
 	Description string        `bson:"description" json:"description"`
 	Points      int           `bson:"points" json:"points"`
-	Flag        string        `bson:"flag" json:"-"`
+	State       string        `bson:"state" json:"state"`
+	Type        string        `bson:"type" json:"type"`
+	Solves      int           `bson:"solves" json:"solves"`
+	Flag        string        `bson:"flag" json:"flag"`
+	Author      string        `bson:"author,omitempty" json:"author,omitempty"`
 }

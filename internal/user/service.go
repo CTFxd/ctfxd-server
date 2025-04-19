@@ -30,7 +30,7 @@ func NewService(repo *Repository) *Service {
 	return serv
 }
 
-func (s *Service) Register(ctx context.Context, email, password string) error {
+func (s *Service) Register(ctx context.Context, email, password string, isAdmin bool) error {
 	_, err := s.repo.GetUserByEmail(ctx, email)
 	if err == nil {
 		return ErrUserExists
@@ -45,10 +45,17 @@ func (s *Service) Register(ctx context.Context, email, password string) error {
 		return err
 	}
 
-	return s.repo.CreateUser(ctx, &User{
+	user := &User{
 		Email:    email,
 		Password: string(hashed),
-	})
+		Role:     "user",
+	}
+
+	if isAdmin == true {
+		user.Role = "admin"
+	}
+
+	return s.repo.CreateUser(ctx, user)
 }
 
 func (s *Service) Login(ctx context.Context, email, password string) (*User, error) {

@@ -21,5 +21,16 @@ func SetupChallengeRoutes(router *gin.Engine, challengeHandler *challenge.Handle
 	{
 		protected.GET("/challenges", challengeHandler.List)
 		protected.GET("/challenge/:id", challengeHandler.Get)
+		protected.GET("/challenge/:id/solves", challengeHandler.GetSolves)
+	}
+
+	admin := protected.Group("")
+	admin.Use(auth.AdminMiddleware())
+	{
+		admin.POST("/challenge", challengeHandler.Post)
+		admin.PATCH("/challenge/:id", challengeHandler.Update)
+		admin.DELETE("/challenge/:id", challengeHandler.Delete)
+
+		admin.GET("/challenge/:id/flag", challengeHandler.GetFlag)
 	}
 }
