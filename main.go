@@ -59,6 +59,7 @@ func main() {
 	challengeHandler := challenge.NewHandler(challengeService)
 
 	router := gin.Default()
+	apiV1 := router.Group("/api/v1")
 
 	// ping route
 	router.GET("/ping", func(c *gin.Context) {
@@ -67,8 +68,10 @@ func main() {
 		})
 	})
 
-	handler.SetupUserRoutes(router, userHandler)
-	handler.SetupChallengeRoutes(router, challengeHandler)
+	apiV1.GET("/reference", apiReferenceGen())
+
+	handler.SetupUserRoutes(apiV1, userHandler)
+	handler.SetupChallengeRoutes(apiV1, challengeHandler)
 
 	router.Run()
 }

@@ -12,11 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupChallengeRoutes(router *gin.Engine, challengeHandler *challenge.Handler) {
-	apiV1 := router.Group("/api/v1")
+func SetupChallengeRoutes(apiGrp *gin.RouterGroup, challengeHandler *challenge.Handler) {
 
 	// protected routes (requires login)
-	protected := apiV1.Group("")
+	protected := apiGrp.Group("")
 	protected.Use(auth.AuthMiddleware())
 	{
 		protected.GET("/challenges", challengeHandler.List)

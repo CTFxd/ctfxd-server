@@ -12,18 +12,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupUserRoutes(router *gin.Engine, userHandler *user.Handler) {
-	apiV1 := router.Group("/api/v1")
+func SetupUserRoutes(apiGrp *gin.RouterGroup, userHandler *user.Handler) {
 
 	// public routes (no auth) Probably ???
-	public := apiV1.Group("")
+	public := apiGrp.Group("")
 	{
 		public.POST("/register", userHandler.RegisterUser)
 		public.POST("/login", userHandler.Login)
 	}
 
 	// protected group (all routes require auth)
-	protected := apiV1.Group("")
+	protected := apiGrp.Group("")
 	protected.Use(auth.AuthMiddleware())
 	{
 		protected.GET("/me", userHandler.GetMe)
