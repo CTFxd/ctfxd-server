@@ -7,30 +7,30 @@
 package handler
 
 import (
-	"github.com/CTFxd/ctfxd-server/internal/auth"
-	"github.com/CTFxd/ctfxd-server/internal/user"
-	"github.com/gin-gonic/gin"
+  "github.com/CTFxd/ctfxd-server/internal/auth"
+  "github.com/CTFxd/ctfxd-server/internal/user"
+  "github.com/gin-gonic/gin"
 )
 
 func SetupUserRoutes(apiGrp *gin.RouterGroup, userHandler *user.Handler) {
 
-	// public routes (no auth) Probably ???
-	public := apiGrp.Group("")
-	{
-		public.POST("/register", userHandler.RegisterUser)
-		public.POST("/login", userHandler.Login)
-	}
+  // public routes (no auth) Probably ???
+  public := apiGrp.Group("")
+  {
+    public.POST("/register", userHandler.RegisterUser)
+    public.POST("/login", userHandler.Login)
+  }
 
-	// protected group (all routes require auth)
-	protected := apiGrp.Group("")
-	protected.Use(auth.AuthMiddleware())
-	{
-		protected.GET("/me", userHandler.GetMe)
-	}
+  // protected group (all routes require auth)
+  protected := apiGrp.Group("")
+  protected.Use(auth.AuthMiddleware())
+  {
+    protected.GET("/me", userHandler.GetMe)
+  }
 
-	admin := protected.Group("")
-	admin.Use(auth.AdminMiddleware())
-	{
-		admin.POST("/admin/register", userHandler.RegisterAdmin)
-	}
+  admin := protected.Group("")
+  admin.Use(auth.AdminMiddleware())
+  {
+    admin.POST("/admin/register", userHandler.RegisterAdmin)
+  }
 }

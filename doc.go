@@ -4,7 +4,7 @@
  * can be found in the LICENSE file.
  */
 
-//go:generate go run github.com/go-swagger/go-swagger/cmd/swagger@latest generate spec -o ./docs/swagger.yml
+//go:generate go run github.com/go-swagger/go-swagger/cmd/swagger@latest generate spec --scan-models -o ./docs/swagger.yml
 
 // Package api CTFxd APIs.
 //
@@ -25,29 +25,29 @@
 package main
 
 import (
-	"log"
-	"net/http"
+  "log"
+  "net/http"
 
-	"github.com/MarceloPetrucio/go-scalar-api-reference"
-	"github.com/gin-gonic/gin"
+  "github.com/MarceloPetrucio/go-scalar-api-reference"
+  "github.com/gin-gonic/gin"
 )
 
 func apiReferenceGen() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		htmlContent, err := scalar.ApiReferenceHTML(&scalar.Options{
-			SpecURL: "./docs/swagger.yml",
-			CustomOptions: scalar.CustomOptions{
-				PageTitle: "CTFxd API",
-			},
-			DarkMode: true,
-		})
+  return func(c *gin.Context) {
+    htmlContent, err := scalar.ApiReferenceHTML(&scalar.Options{
+      SpecURL: "./docs/swagger.yml",
+      CustomOptions: scalar.CustomOptions{
+        PageTitle: "CTFxd API",
+      },
+      DarkMode: true,
+    })
 
-		if err != nil {
-			log.Printf("doc: error: %v\n", err)
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
+    if err != nil {
+      log.Printf("doc: error: %v\n", err)
+      c.AbortWithError(http.StatusInternalServerError, err)
+      return
+    }
 
-		c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(htmlContent))
-	}
+    c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(htmlContent))
+  }
 }

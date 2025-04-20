@@ -7,36 +7,36 @@
 package user
 
 import (
-	"context"
+  "context"
 
-	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
+  "go.mongodb.org/mongo-driver/v2/bson"
+  "go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type Repository struct {
-	collection *mongo.Collection
+  collection *mongo.Collection
 }
 
 func NewRepository(db *mongo.Database) *Repository {
-	repo := new(Repository)
-	repo.collection = db.Collection("users")
+  repo := new(Repository)
+  repo.collection = db.Collection("users")
 
-	return repo
+  return repo
 }
 
 func (r *Repository) CreateUser(ctx context.Context, user *User) error {
-	_, err := r.collection.InsertOne(ctx, user)
+  _, err := r.collection.InsertOne(ctx, user)
 
-	return err
+  return err
 }
 
 func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
-	user := new(User)
+  user := new(User)
 
-	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(user)
-	if err != nil {
-		return nil, err
-	}
+  err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(user)
+  if err != nil {
+    return nil, err
+  }
 
-	return user, nil
+  return user, nil
 }

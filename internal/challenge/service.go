@@ -7,38 +7,38 @@
 package challenge
 
 import (
-	"context"
+  "context"
 
-	"go.mongodb.org/mongo-driver/v2/bson"
+  "go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Service struct {
-	repo *Repository
+  repo *Repository
 }
 
 func NewService(repo *Repository) *Service {
-	serv := new(Service)
-	serv.repo = repo
+  serv := new(Service)
+  serv.repo = repo
 
-	return serv
+  return serv
 }
 
 func (s *Service) ListChallenges(ctx context.Context) ([]Challenge, error) {
-	return s.repo.GetAll(ctx)
+  return s.repo.GetAll(ctx)
 }
 
 func (s *Service) GetChallenge(ctx context.Context, id string) (*Challenge, error) {
-	return s.repo.GetByID(ctx, id)
+  return s.repo.GetByID(ctx, id)
 }
 
 func (s *Service) CreateChallenge(ctx context.Context, c *Challenge) error {
-	return s.repo.Create(ctx, c)
+  return s.repo.Create(ctx, c)
 }
 
 func (s *Service) UpdateChallenge(ctx context.Context, id string, update bson.M) error {
-	return s.repo.Update(ctx, id, update)
+  return s.repo.Update(ctx, id, update)
 }
 
 func (s *Service) DeleteChallenge(ctx context.Context, id string) error {
-	return s.repo.Delete(ctx, id)
+  return s.repo.Delete(ctx, id)
 }
