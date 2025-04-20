@@ -10,6 +10,8 @@
 //
 // These CTFxd APIs do things better.
 //
+// swagger: '2.0'
+//
 // Schemes: http
 // Host: localhost:8080
 // BasePath: /api/v1

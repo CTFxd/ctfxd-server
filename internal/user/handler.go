@@ -57,12 +57,13 @@ func NewHandler(service *Service) *Handler {
 // ---
 // tags: [users]
 // description: Register a new user account
+//
 // parameters:
 //   - name: body
 //     in: body
+//     description: User registration information
 //     required: true
-//     schema:
-//     $ref: "#/definitions/RegisterRequest"
+//     schema: {$ref: "#/definitions/RegisterRequest"}
 //
 // responses:
 //
@@ -106,8 +107,7 @@ func (h *Handler) RegisterUser(c *gin.Context) {
 //   - name: body
 //     in: body
 //     required: true
-//     schema:
-//     $ref: "#/definitions/RegisterRequest"
+//     schema: {$ref: "#/definitions/RegisterRequest"}
 //
 // responses:
 //
@@ -174,8 +174,7 @@ func (h *Handler) register(c *gin.Context, isAdmin bool) {
 //   - name: body
 //     in: body
 //     required: true
-//     schema:
-//     $ref: "#/definitions/LoginRequest"
+//     schema: {$ref: "#/definitions/LoginRequest"}
 //
 // responses:
 //

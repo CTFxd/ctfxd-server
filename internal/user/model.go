@@ -10,7 +10,6 @@ import (
   "go.mongodb.org/mongo-driver/v2/bson"
 )
 
-// swagger:model User
 type User struct {
   ID       bson.ObjectID `bson:"_id,omitempty" json:"id"`
   Email    string        `bson:"email" json:"email"`
