@@ -8,6 +8,7 @@ package challenge
 
 import (
   "context"
+  "errors"
 
   "go.mongodb.org/mongo-driver/v2/bson"
   "go.mongodb.org/mongo-driver/v2/mongo"
@@ -61,13 +62,13 @@ func (r *Repository) Create(ctx context.Context, c *Challenge) error {
   return err
 }
 
-func (r *Repository) Update(ctx context.Context, id string, update bson.M) error {
+func (r *Repository) Update(ctx context.Context, id string, update any) error {
   objId, err := bson.ObjectIDFromHex(id)
   if err != nil {
     return err
   }
 
-  _, err = r.collection.UpdateOne(ctx, bson.M{"_id": objId}, bson.M{"$set": update})
+  _, err = r.collection.UpdateOne(ctx, bson.M{"_id": objId}, update)
   return err
 }
 
@@ -77,6 +78,12 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
     return err
   }
 
-  _, err = r.collection.DeleteOne(ctx, bson.M{"_id": objId})
-  return err
+  result, err := r.collection.DeleteOne(ctx, bson.M{"_id": objId})
+  if result.DeletedCount == 0 {
+    return errors.New("no item found")
+  } else if err != nil {
+    return err
+  }
+
+  return nil
 }

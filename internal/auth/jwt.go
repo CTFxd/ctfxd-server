@@ -9,13 +9,12 @@ package auth
 import (
   "errors"
   "fmt"
-  "os"
   "time"
 
   "github.com/golang-jwt/jwt/v5"
 )
 
-var jwtKey = []byte(os.Getenv("SECRET_PHRASE"))
+var JwtKey []byte
 
 type Claims struct {
   UserID string `json:"user_id"`
@@ -36,7 +35,7 @@ func GenerateJWT(userID, email, role string) (string, error) {
   }
 
   token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-  return token.SignedString(jwtKey)
+  return token.SignedString(JwtKey)
 }
 
 func ParseJWT(tokenStr string) (*Claims, error) {
@@ -47,7 +46,7 @@ func ParseJWT(tokenStr string) (*Claims, error) {
     if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
       return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
     }
-    return jwtKey, nil
+    return JwtKey, nil
   })
 
   if err != nil || !token.Valid {

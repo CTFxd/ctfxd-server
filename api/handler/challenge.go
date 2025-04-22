@@ -14,22 +14,29 @@ import (
 
 func SetupChallengeRoutes(apiGrp *gin.RouterGroup, challengeHandler *challenge.Handler) {
 
-  // protected routes (requires login)
-  protected := apiGrp.Group("")
-  protected.Use(auth.AuthMiddleware())
+  public := apiGrp.Group("/challenge")
   {
-    protected.GET("/challenges", challengeHandler.List)
-    protected.GET("/challenge/:id", challengeHandler.Get)
-    protected.GET("/challenge/:id/solves", challengeHandler.GetSolves)
+    public.GET("", challengeHandler.GetChallenges)
+    public.GET("/:id", challengeHandler.GetChallenge)
   }
 
-  admin := protected.Group("")
-  admin.Use(auth.AdminMiddleware())
+  // protected routes (requires login)
+  protected := apiGrp.Group("/challenge")
+  protected.Use(auth.AuthMiddleware())
   {
-    admin.POST("/challenge", challengeHandler.Post)
-    admin.PATCH("/challenge/:id", challengeHandler.Update)
-    admin.DELETE("/challenge/:id", challengeHandler.Delete)
+    protected.GET("/:id/solves", challengeHandler.GetSolves)
 
-    admin.GET("/challenge/:id/flag", challengeHandler.GetFlag)
+    admin := protected.Group("")
+    admin.Use(auth.AdminMiddleware())
+    {
+      admin.POST("", challengeHandler.CreateChallenge)
+      admin.PATCH("/:id", challengeHandler.UpdateChallenge)
+      admin.DELETE("/:id", challengeHandler.DeleteChallenge)
+      admin.GET("/:id/flag", challengeHandler.GetFlag)
+
+      admin.POST("/:id/file", challengeHandler.AddChallengeFile)
+      admin.PUT("/:id/file/:uuid", challengeHandler.UpdateChallengeFile)
+      admin.DELETE("/:id/file/:uuid", challengeHandler.DeleteChallengeFile)
+    }
   }
 }

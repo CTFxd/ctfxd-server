@@ -7,6 +7,8 @@
 package challenge
 
 import (
+  "time"
+
   "go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -21,4 +23,12 @@ type Challenge struct {
   Solves      int           `bson:"solves" json:"solves"`
   Flag        string        `bson:"flag" json:"flag"`
   Author      string        `bson:"author,omitempty" json:"author,omitempty"`
+  Files       []FileMeta    `bson:"files,omitempty" json:"files,omitempty"`
+}
+
+type FileMeta struct {
+  UUID       string    `bson:"uuid" json:"uuid"`
+  Name       string    `bson:"name" json:"name"`
+  Size       int64     `bson:"size" json:"size"`
+  UploadedAt time.Time `bson:"uploadedat" json:"uploadedat"`
 }
