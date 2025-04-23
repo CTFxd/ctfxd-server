@@ -196,6 +196,20 @@ func (s *Service) DeleteChallengeFile(ctx context.Context, id string, fileUUID s
   return nil
 }
 
+func (s *Service) GetChallengeFile(ctx context.Context, id, fileUUID string) (string, string, error) {
+  fileMeta, err := s.FileExistsInChallenge(ctx, id, fileUUID)
+  if err != nil {
+    return "", "", err
+  }
+
+  filePath, err := s.fileService.ValidateFile(fileMeta)
+  if err != nil {
+    return "", "", err
+  }
+
+  return filePath, fileMeta.Name, nil
+}
+
 func (s *Service) CleanOrphanFileUploads(ctx context.Context) ([]string, error) {
   challenges, err := s.ListChallenges(ctx)
   if err != nil {
@@ -227,4 +241,26 @@ func (s *Service) CleanOrphanFileUploads(ctx context.Context) ([]string, error) 
   }
 
   return removedFiles, nil
+}
+
+func (s *Service) FileExistsInChallenge(ctx context.Context, id, fileUUID string) (*FileMeta, error) {
+  challenge, err := s.repo.GetByID(ctx, id)
+  if err != nil {
+    return nil, err
+  }
+
+  var downloadFile *FileMeta
+
+  for _, f := range challenge.Files {
+    if f.UUID == fileUUID {
+      downloadFile = &f
+      break
+    }
+  }
+
+  if downloadFile == nil {
+    return nil, ErrFileNotFound
+  }
+
+  return downloadFile, nil
 }

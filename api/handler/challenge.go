@@ -18,6 +18,7 @@ func SetupChallengeRoutes(apiGrp *gin.RouterGroup, challengeHandler *challenge.H
   {
     public.GET("", challengeHandler.GetChallenges)
     public.GET("/:id", challengeHandler.GetChallenge)
+    public.GET("/:id/file/:uuid", challengeHandler.DownloadChallengeFile)
   }
 
   // protected routes (requires login)

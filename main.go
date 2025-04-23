@@ -14,6 +14,7 @@ import (
   "net/http"
   "os"
   "os/signal"
+  "regexp"
   "strconv"
   "sync"
   "time"
@@ -141,6 +142,8 @@ func main() {
 }
 
 func loadServerConfigs() (*ServerConfig, error) {
+  re := regexp.MustCompile(`^(\d+)([hms]{1})$`)
+
   err := godotenv.Load()
   if err != nil {
     return nil, errors.New("error loading .env file")
@@ -206,17 +209,28 @@ func loadServerConfigs() (*ServerConfig, error) {
     log.Printf("warning: ROUTINE_PERIOD not found! using default(%s)\n", timePeriod)
   }
 
-  if timePeriod[len(timePeriod)-1] != 's' && timePeriod[len(timePeriod)-1] != 'm' &&
-    timePeriod[len(timePeriod)-1] != 'h' {
-    return nil, errors.New("error: invalid time period format")
+  timePeriodMatch := re.FindStringSubmatch(timePeriod)
+  if timePeriodMatch == nil {
+    return nil, errors.New("error: invalid ROUTINE_PERIOD format!")
   }
 
-  tick, err := strconv.ParseUint(timePeriod[:len(timePeriod)-1], 10, 64)
+  tick, err := strconv.ParseUint(timePeriodMatch[1], 10, 64)
   if err != nil {
     return nil, errors.New("error: invalid time period format")
   }
 
-  serverConfig.routinePeriod = time.Duration(tick) * time.Second
+  serverConfig.routinePeriod = time.Duration(tick)
+
+  switch timePeriodMatch[2] {
+  case "h":
+    serverConfig.routinePeriod *= time.Hour
+  case "m":
+    serverConfig.routinePeriod *= time.Minute
+  case "s":
+    serverConfig.routinePeriod *= time.Second
+  }
+
+  fmt.Printf("time period: %v", serverConfig.routinePeriod)
 
   return serverConfig, nil
 }

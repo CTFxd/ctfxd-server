@@ -21,8 +21,9 @@ import (
 const uploadDir = "uploads/challenge"
 
 var (
-  ErrNoFile         = errors.New("uploaded files not found")
-  ErrFileExcedLimit = errors.New("file size exceeds limit")
+  ErrNoFile           = errors.New("uploaded files not found")
+  ErrFileExcedLimit   = errors.New("file size exceeds limit")
+  ErrFileNotOnStorage = errors.New("file not found on storage")
 )
 
 type FileService struct {
@@ -90,6 +91,15 @@ func (fs *FileService) processUploads(files []*multipart.FileHeader, c *gin.Cont
   }
 
   return uploadedFiles, nil
+}
+
+func (fs *FileService) ValidateFile(file *FileMeta) (string, error) {
+  filePath := filepath.Join(fs.uploadDir, file.UUID)
+  if _, err := os.Stat(filePath); os.IsNotExist(err) {
+    return "", ErrFileNotOnStorage
+  }
+
+  return filePath, nil
 }
 
 func (fs *FileService) cleanupFiles(files []FileMeta) {

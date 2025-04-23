@@ -9,6 +9,7 @@ package challenge
 import (
   "encoding/json"
   "errors"
+  "fmt"
   "log"
   "net/http"
 
@@ -227,4 +228,24 @@ func (h *Handler) DeleteChallengeFile(c *gin.Context) {
   }
 
   c.Status(http.StatusNoContent)
+}
+
+func (h *Handler) DownloadChallengeFile(c *gin.Context) {
+  challengeID := c.Param("id")
+  fileUUID := c.Param("uuid")
+
+  filePath, fileName, err := h.service.GetChallengeFile(c.Request.Context(), challengeID, fileUUID)
+  if err != nil {
+    log.Printf("challenge: error(%v)\n", err)
+    if errors.Is(err, ErrFileNotFound) || errors.Is(err, ErrFileNotOnStorage) {
+      c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+    } else {
+      c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to download file"})
+    }
+    return
+  }
+
+  c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
+  c.Header("content-Type", "application/octet-stream")
+  c.File(filePath)
 }
