@@ -77,10 +77,12 @@ func (s *Service) Submit(ctx context.Context, userID, email, challengeID, submit
 
   err = s.repo.Create(ctx, sub)
   if err != nil {
-    LastSuccessSubmission.Mtx.Lock()
-    defer LastSuccessSubmission.Mtx.Unlock()
-    LastSuccessSubmission.SubmissionTime = time.Now().UTC()
+    return err
   }
 
-  return err
+  LastSuccessSubmission.Mtx.Lock()
+  defer LastSuccessSubmission.Mtx.Unlock()
+  LastSuccessSubmission.SubmissionTime = sub.Timestamp
+
+  return nil
 }

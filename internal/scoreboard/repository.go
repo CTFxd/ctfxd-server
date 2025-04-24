@@ -35,14 +35,14 @@ func (r *Repository) GetScoreboard(ctx context.Context) ([]Score, error) {
     }}},
     bson.D{{Key: "$unwind", Value: "$challenge"}},
 
-    // group by user_id
+    // group by user_id (to get the aggregated scores)
     bson.D{{Key: "$group", Value: bson.M{
       "_id":        "$user_id",
       "score":      bson.M{"$sum": "$challenge.points"},
       "last_solve": bson.M{"$max": "$timestamp"},
     }}},
 
-    // Join users to get the email
+    // join users to get the email
     bson.D{{Key: "$lookup", Value: bson.M{
       "from":         "users",
       "localField":   "_id", // _id -> user_id from group (Should Work ?)
