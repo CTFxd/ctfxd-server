@@ -22,6 +22,8 @@ import (
   "github.com/CTFxd/ctfxd-server/api/handler"
   "github.com/CTFxd/ctfxd-server/internal/auth"
   "github.com/CTFxd/ctfxd-server/internal/challenge"
+  "github.com/CTFxd/ctfxd-server/internal/scoreboard"
+  "github.com/CTFxd/ctfxd-server/internal/submission"
   "github.com/CTFxd/ctfxd-server/internal/user"
   "github.com/CTFxd/ctfxd-server/pkg/db"
   "github.com/gin-gonic/gin"
@@ -70,6 +72,14 @@ func main() {
   challengeService := challenge.NewService(challengeRepo)
   challengeHandler := challenge.NewHandler(challengeService)
 
+  submissionRepo := submission.NewRepository(mongoClient.Database)
+  submissionService := submission.NewService(submissionRepo, challengeService)
+  submissionHandler := submission.NewHandler(submissionService)
+
+  scoreboardRepo := scoreboard.NewRepository(submissionRepo)
+  scoreboardService := scoreboard.NewService(scoreboardRepo)
+  scoreboardHandler := scoreboard.NewHandler(scoreboardService)
+
   router := gin.Default()
   router.SetTrustedProxies(nil)
 
@@ -86,13 +96,13 @@ func main() {
 
   handler.SetupUserRoutes(apiV1, userHandler)
   handler.SetupChallengeRoutes(apiV1, challengeHandler)
+  handler.SetupSubmissionRoutes(apiV1, submissionHandler)
+  handler.SetupScoreboardRoutes(apiV1, scoreboardHandler)
 
   srv := &http.Server{
     Addr:    fmt.Sprintf("%s:%s", serverConfigs.host, serverConfigs.port),
     Handler: router,
   }
-
-  log.Println("DEBUG DEBUG", srv.Addr)
 
   errChan := make(chan error, 1)
   quit := make(chan os.Signal, 1)
@@ -229,8 +239,6 @@ func loadServerConfigs() (*ServerConfig, error) {
   case "s":
     serverConfig.routinePeriod *= time.Second
   }
-
-  fmt.Printf("time period: %v", serverConfig.routinePeriod)
 
   return serverConfig, nil
 }
